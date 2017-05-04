@@ -1,0 +1,38 @@
+{
+  "name": "official",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/great-tiger/demo.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/great-tiger/demo/issues"
+  },
+  "homepage": "https://github.com/great-tiger/demo#readme",
+  "devDependencies": {
+    "browser-sync": "^2.12.5",
+    "del": "~2.0.1",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "~3.0.1",
+    "gulp-clean-css": "^2.0.7",
+    "gulp-concat": "~2.5.0",
+    "gulp-eslint": "~1.0.0",
+    "gulp-filter": "~3.0.1",
+    "gulp-inject": "^4.0.0",
+    "gulp-load-plugins": "^1.2.2",
+    "gulp-sass": "^2.3.1",
+    "gulp-sourcemaps": "~1.6.0",
+    "gulp-imagemin": "^3.0.1",
+    "gulp-uglify": "^1.5.3",
+    "gulp-util": "~3.0.6",
+    "run-sequence": "^1.2.0",
+    "wrench": "~1.5.8"
+  }
+}

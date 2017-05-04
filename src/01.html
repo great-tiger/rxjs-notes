@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>创建Observables</title>
+    <script src="http://cdn.bootcss.com/jquery/1.12.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/rxjs/5.1.1/Rx.js"></script>
+</head>
+
+<body>
+    <button>test</button>
+    <script type="text/javascript">
+    // 创建Observables
+
+    // ArrayObservable 对象
+    var obj1 = Rx.Observable.of('foo', 'bar');
+
+    // ArrayObservable 对象
+    var obj2 = Rx.Observable.from([1, 2, 3]);
+
+    // From an event  FromEventObservable 对象
+    var obj3 = Rx.Observable.fromEvent(document.querySelector('button'), 'click');
+
+    // From a Promise
+
+    // Rx.Observable.fromPromise(fetch('/users'));
+
+    // From a callback (last argument is a callback)
+    // fs.exists = (path, cb(exists))
+
+    // var exists = Rx.Observable.bindCallback(fs.exists);
+    // exists('file.txt').subscribe(exists => console.log('Does file exist?', exists));
+
+    // From a callback (last argument is a callback)
+    // fs.rename = (pathA, pathB, cb(err, result))
+    // var rename = Rx.Observable.bindNodeCallback(fs.rename);
+    // rename('file.txt', 'else.txt').subscribe(() => console.log('Renamed!'));
+    </script>
+    <script type="text/javascript">
+    var myObservable = Rx.Observable.create(observer => {
+        observer.next('foo');
+        setTimeout(() => observer.next('bar'), 1000);
+    });
+    myObservable.subscribe(value => console.log(value));
+    </script>
+</body>
+
+</html>
