@@ -3,14 +3,61 @@
 
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <title>ReplaySubject</title>
     <script src="http://cdn.bootcss.com/jquery/1.12.1/jquery.min.js"></script>
     <script src="https://cdn.bootcss.com/rxjs/5.1.1/Rx.js"></script>
 </head>
 
 <body>
     <script type="text/javascript">
-    
+    var subject = new Rx.ReplaySubject(3 /* 回放数量 */ );
+
+    subject.subscribe({
+        next: (v) => console.log('observerA: ' + v)
+    });
+
+    subject.next(1);
+    subject.next(2);
+    subject.next(3);
+    subject.next(4);
+
+    subject.subscribe({
+        next: (v) => console.log('observerB: ' + v)
+    });
+
+    subject.next(5);
+
+    /*
+	ReplaySubject 如同于BehaviorSubject是 Subject 的子类。通过 ReplaySubject可以向新的订阅者推送旧数值，就像一个录像机ReplaySubject可以记录Observable的一部分状态（过去时间内推送的值）。
+
+    一个ReplaySubject可以记录Observable执行过程中推送的多个值，并向新的订阅者回放它们。
+
+
+
+    */
+    </script>
+
+    <script type="text/javascript">
+    var subject = new Rx.ReplaySubject(100, 500 /* windowTime */ );
+
+    subject.subscribe({
+        next: (v) => console.log('observerA: ' + v)
+    });
+
+    var i = 1;
+    setInterval(() => subject.next(i++), 200);
+
+    setTimeout(() => {
+        subject.subscribe({
+            next: (v) => console.log('observerB: ' + v)
+        });
+    }, 1000);
+
+    /*
+	除了回放数量，你也可以以毫秒为单位去指定“窗口时间”，决定ReplaySubject记录多久以前Observable推送的数值。下面的例子中，我们把回放数量设置为100，把窗口时间设置为500毫秒：
+	第二个Observer接受到3（600ms）, 4（800ms） 和 5（1000ms），这些值均在订阅之前的500毫秒内推送（窗口长度 1000ms - 600ms = 400ms < 500ms）：
+
+    */
     </script>
 </body>
 
