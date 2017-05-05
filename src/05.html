@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Rx.Observable.catch</title>
+    <script src="http://cdn.bootcss.com/jquery/1.12.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/rxjs/5.1.1/Rx.js"></script>
+</head>
+
+<body>
+    <button>test</button>
+    <script type="text/javascript">
+    /*
+        obs1 挂掉之后，紧接着 obs2 就会被订阅
+        
+        用它来容灾很好
+    */
+    var obs1 = Rx.Observable.create(observer => {
+        observer.next('foo');
+        setTimeout(() => observer.next('bar'), 1000);
+        setTimeout(() => observer.error(new Error('error')), 2000);
+    });
+
+    var obs2 = Rx.Observable.return(42);
+
+    var source = Rx.Observable.catch(obs1, obs2);
+
+    var subscription = source.subscribe(
+        x => console.log(`onNext: ${x}`),
+        e => console.log(`onError: ${e}`),
+        () => console.log('onCompleted'));
+
+    /*
+        结果：
+        "onNext: foo"
+        "onNext: bar"
+        "onNext: 42"
+        "onCompleted"
+    */
+    </script>
+</body>
+
+</html>
