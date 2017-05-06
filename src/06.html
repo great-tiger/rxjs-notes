@@ -16,12 +16,15 @@
     async:达到的效果就是异步发送值,类似于setTimeout
 
     asap 和 async 效果差不多：都是异步发送值，但是使用asap时，同步代码执行完成后，asap 发送值更早
-    
+
     queue: 官方解释
     Put every next task on a queue, instead of executing it immediately
     具体情况请参考例子:queue*()
     对比queue2<--->queue3输出的顺序一样的，那么queue的作用在哪里呢？
-
+    文档中解释说：使用queue可以保证分配其它的任务时，先前分配的任务都已经执行完成了。用了一个递归的例子 queue2 说明。
+    当delay > 0 时，queue 和 async 作用一样 参考 queue
+    当delay = 0 时，同步执行代码 参考 queue1
+    queue 都能满足文档中陈述的功能
     </pre>
     <script type="text/javascript">
     function asap() {
