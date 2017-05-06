@@ -6,9 +6,15 @@
     <title>Scheduler</title>
     <script src="http://cdn.bootcss.com/jquery/1.12.1/jquery.min.js"></script>
     <script src="https://cdn.bootcss.com/rxjs/5.1.1/Rx.js"></script>
+    <style type="text/css">
+    .some-div {
+        background-color: #ccc;
+    }
+    </style>
 </head>
 
 <body>
+    <div class="some-div">abc</div>
     <a target="_blank" href="http://reactivex.io/rxjs/variable/index.html#static-variable-async">文档</a>
     <pre>
     共有四种调度器：asap,async,queue,animationFrame
@@ -25,6 +31,22 @@
     当delay > 0 时，queue 和 async 作用一样 参考 queue
     当delay = 0 时，同步执行代码 参考 queue1
     queue 都能满足文档中陈述的功能
+
+    animationFrame:
+    Perform task when window.requestAnimationFrame would fire
+
+    当delay>0时，功能相当于 async
+
+    总结一下:
+    在queue2中
+    this.schedule(state - 1); // `this` references currently executing Action
+    后面解释this指向正在执行的Action。
+    那Action到底是什么呢？
+    官方解释说：它是Scheduler的执行单元
+    原文：A unit of work to be executed in a Scheduler.
+    An action is typically created from within a Scheduler and an RxJS user does not need 
+    to concern themselves about creating and manipulating an Action.
+    它有一个公有的方法 : schedule(state,delay)
     </pre>
     <script type="text/javascript">
     function asap() {
@@ -124,7 +146,7 @@
         // "before", 1
         // "after", 1
     }
-    queue2();  
+    queue2();
 
     function queue3() {
         console.log('queue3 exec ...');
@@ -145,7 +167,18 @@
     }
     // queue3();
 
+    function animationFrame() {
+        var div = document.querySelector('.some-div');
 
+        Rx.Scheduler.animationFrame.schedule(function(height) {
+            div.style.height = height + "px";
+            if (height < 100)
+                this.schedule(height + 1);
+            // `this` references currently executing Action,
+            // which we reschedule with new state
+        }, 0, 0);
+    }
+    // animationFrame();
     </script>
 </body>
 
