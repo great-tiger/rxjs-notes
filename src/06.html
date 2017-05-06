@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Scheduler</title>
+    <script src="http://cdn.bootcss.com/jquery/1.12.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/rxjs/5.1.1/Rx.js"></script>
+</head>
+
+<body>
+    <a target="_blank" href="http://reactivex.io/rxjs/variable/index.html#static-variable-async">文档</a>
+    <pre>
+    共有四种调度器：asap,async,queue,animationFrame
+
+    async:达到的效果就是异步发送值,类似于setTimeout
+
+    asap 和 async 效果差不多：都是异步发送值，但是使用asap时，同步代码执行完成后，asap 发送值更早
+    
+    queue: 官方解释
+    Put every next task on a queue, instead of executing it immediately
+    具体情况请参考例子:queue*()
+    对比queue2<--->queue3输出的顺序一样的，那么queue的作用在哪里呢？
+
+    </pre>
+    <script type="text/javascript">
+    function asap() {
+        Rx.Scheduler.asap.schedule(function(state) {
+            console.log(state);
+        }, 0, 0);
+        console.log(1);
+    }
+    //asap();
+
+    function async() {
+        Rx.Scheduler.async.schedule(function(state) {
+            console.log(state);
+        }, 0, 0);
+        console.log(1);
+    }
+    //async()
+
+    //比较asap与async
+    function asapAsync() {
+        Rx.Scheduler.async.schedule(function(state) {
+            console.log(state);
+        }, 0, 'async exec ...');
+        Rx.Scheduler.asap.schedule(function(state) {
+            console.log(state);
+        }, 0, 'asap exec ...');
+
+    }
+    //asapAsync();
+    /*
+    结果：
+    asap exec ...
+    async exec ...
+    */
+
+    function interval() {
+        function task(state) {
+            console.log(state);
+            // `this` references currently executing Action,
+            // which we reschedule with new state and delay
+            console.log(this.schedule)
+            if (state < 3)
+                this.schedule(state + 1, 1000); //注意签名 (state,delay)
+        }
+
+        Rx.Scheduler.async.schedule(task, 3000, 0); //注意签名 (task,delay,state)
+
+        // Logs:
+        // 0 after 3s
+        // 1 after 4s
+        // 2 after 5s
+        // 3 after 6s
+    }
+    // interval();
+
+    function queue() {
+        //当delay > 0 相当于 async 调度器
+        Rx.Scheduler.queue.schedule(() => console.log(0), 3000);
+        console.log(1);
+    }
+    //queue();
+
+    function queue1() {
+        //当不使用delay时，同步执行代码
+        Rx.Scheduler.queue.schedule(() => console.log(0));
+        console.log(1);
+    }
+    // queue1();
+
+    function queue2() {
+        console.log('queue2 exec ...');
+        Rx.Scheduler.queue.schedule(function(state) {
+            if (state !== 0) {
+                console.log('before', state);
+                this.schedule(state - 1); // `this` references currently executing Action,
+                // which we reschedule with new state
+                console.log('after', state);
+            }
+        }, 0, 3);
+        console.log('上面的代码同步执行');
+        //注意上面的代码中delay为0。所以是同步代码。
+
+
+        // In scheduler that runs recursively, you would expect:
+        // "before", 3
+        // "before", 2
+        // "before", 1
+        // "after", 1
+        // "after", 2
+        // "after", 3
+
+        // But with queue it logs:
+        // "before", 3
+        // "after", 3
+        // "before", 2
+        // "after", 2
+        // "before", 1
+        // "after", 1
+    }
+    queue2();  
+
+    function queue3() {
+        console.log('queue3 exec ...');
+        Rx.Scheduler.async.schedule(function(state) {
+            if (state !== 0) {
+                console.log('before', state);
+                this.schedule(state - 1);
+                console.log('after', state);
+            }
+        }, 0, 3);
+
+        // "before", 3
+        // "after", 3
+        // "before", 2
+        // "after", 2
+        // "before", 1
+        // "after", 1
+    }
+    // queue3();
+
+
+    </script>
+</body>
+
+</html>
