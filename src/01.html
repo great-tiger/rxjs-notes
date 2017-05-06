@@ -38,11 +38,96 @@
     // rename('file.txt', 'else.txt').subscribe(() => console.log('Renamed!'));
     </script>
     <script type="text/javascript">
-    var myObservable = Rx.Observable.create(observer => {
-        observer.next('foo');
-        setTimeout(() => observer.next('bar'), 1000);
-    });
-    myObservable.subscribe(value => console.log(value));
+        function create(){
+            var myObservable = Rx.Observable.create(observer => {
+                        observer.next('foo');
+                    setTimeout(() => observer.next('bar'), 1000);
+            });
+            myObservable.subscribe(value => console.log(value));
+        }
+
+        function empty(){
+            var result = Rx.Observable.empty();
+            result.subscribe(x => console.log('value',x),x=>console.log('error',x),x=>console.log('complete'));
+            console.log('同步发送complete通知');
+        }
+        //empty();
+
+        function from(){
+            var array = [10, 20, 30];
+            var result = Rx.Observable.from(array);
+            result.subscribe(x => console.log(x));
+        }
+        //from();
+
+        function of(){
+            //可以是不同类型的数据
+            var result = Rx.Observable.of(1,2,'b','c');
+            result.subscribe(x => console.log(x));
+        }
+        //of();
+
+        function range(){
+            var numbers = Rx.Observable.range(1, 10);
+            numbers.subscribe(x => console.log(x));
+        }
+        //range();
+
+        function throwEx(){
+            //Rx.Observable.throw 只输出一个异常
+            var result = Rx.Observable.throw(new Error('oops!')).startWith(7);
+            result.subscribe(x => console.log(x), e => console.error(e));
+        }
+        //throwEx();
+    </script>
+
+    <script type="text/javascript">
+        function interval(){
+            //在使用默认策略的情况下，1s发送一个整数，从0开始。0是1s后发出的。
+            var numbers = Rx.Observable.interval(1000);
+            numbers.subscribe(x => console.log(x));
+            console.log('interval 是异步的');
+            //事实证明interval是异步发送值的
+        }
+        //interval();
+
+        // 共有四种策略，实验看到的效果一样。
+        function queue(){
+            var numbers=Rx.Observable.interval(1000,Rx.Scheduler.queue);
+            numbers.subscribe(x=>console.log(x));
+        }
+        //queue()
+
+        function animationFrame(){
+            var numbers=Rx.Observable.interval(1000,Rx.Scheduler.animationFrame);
+            numbers.subscribe(x=>console.log(x));
+        }
+        //animationFrame();
+
+        function asap(){
+            var numbers=Rx.Observable.interval(1000,Rx.Scheduler.asap);
+            numbers.subscribe(x=>console.log(x));
+        }
+        //asap();
+
+        function async(){
+            var numbers=Rx.Observable.interval(1000,Rx.Scheduler.async);
+            numbers.subscribe(x=>console.log(x));
+        }
+        //async()
+
+        function schedule(){
+            //Rx.Scheduler.queue.schedule 签名 （work,delay,state)
+            Rx.Scheduler.queue.schedule(function(state){
+                if(state!==0){
+                    console.log('before', state);
+                    this.schedule(state - 1); // `this` references currently executing Action,
+                                              // which we reschedule with new state
+                    console.log('after', state);
+                }
+            },10,3);
+        }
+        //schedule();
     </script>
 </body>
 
